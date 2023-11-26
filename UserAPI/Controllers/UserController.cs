@@ -10,12 +10,10 @@ namespace UserAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IConfiguration _configuration;
 
-        public UserController(IUserService userService, IConfiguration configuration)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _configuration = configuration;
         }
 
         [HttpGet]
