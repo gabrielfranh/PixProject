@@ -1,8 +1,5 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using UserAPI.Context;
 using UserAPI.Mapping;
 using UserAPI.Repositories;

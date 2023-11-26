@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using System.Text.RegularExpressions;
 using UserAPI.DTOs;
 using UserAPI.Services.Interfaces;
@@ -70,7 +67,7 @@ namespace UserAPI.Controllers
             return NotFound(id);
         }
 
-        private string ValidateUserCreation(UserDTO userDTO)
+        private static string ValidateUserCreation(UserDTO userDTO)
         {
             if (string.IsNullOrEmpty(userDTO.Username))
                 return "Username não pode ser vazio";
