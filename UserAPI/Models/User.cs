@@ -16,13 +16,13 @@ namespace UserAPI.Models
         [Column("Email")]
         public string Email { get; set; }
 
-        [Column("Password")]
-        public string Password { get; set; }
-
         [Column("Username")]
         public string Username { get; set; }
 
         [Column("Hash")]
         public string Hash { get; set; }
+
+        [Column("Salt")]
+        public string Salt { get; set; }
     }
 }

@@ -43,7 +43,6 @@ namespace UserAPI.Repositories
             dbUser.Username = userDTO.Username;
             dbUser.Name = userDTO.Name;
             dbUser.Email = userDTO.Email;
-            dbUser.Password = userDTO.Password;
 
             await _userContext.SaveChangesAsync();
 
