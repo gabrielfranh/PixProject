@@ -4,20 +4,19 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-EXPOSE 3306
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["UserAPI/UserAPI.csproj", "UserAPI/"]
-RUN dotnet restore "UserAPI/UserAPI.csproj"
+COPY ["AccountAPI/AccountAPI.csproj", "AccountAPI/"]
+RUN dotnet restore "AccountAPI/AccountAPI.csproj"
 COPY . .
-WORKDIR "/src/UserAPI"
-RUN dotnet build "UserAPI.csproj" -c Release -o /app/build
+WORKDIR "/src/AccountAPI"
+RUN dotnet build "AccountAPI.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "UserAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "AccountAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "UserAPI.dll"]
+ENTRYPOINT ["dotnet", "AccountAPI.dll"]

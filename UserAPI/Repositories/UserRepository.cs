@@ -10,39 +10,35 @@ namespace UserAPI.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UserContext _userContext;
-        private readonly IMapper _mapper;
 
         public UserRepository(UserContext userContext, IMapper mapper)
         {
             _userContext = userContext;
-            _mapper = mapper;
         }
 
-        public async Task<UserDTO> GetUserById(int id)
+        public async Task<User> GetUserById(int id)
         {
             var user = await _userContext.Users.FirstOrDefaultAsync(user => user.Id == id);
 
-            return _mapper.Map<UserDTO>(user);
+            return user;
         }
 
-        public async Task CreateUser(UserDTO userDTO)
+        public async Task CreateUser(User user)
         {
-            var user = _mapper.Map<User>(userDTO);
-
             await _userContext.Users.AddAsync(user);
             await _userContext.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateUser(UserDTO userDTO)
+        public async Task<bool> UpdateUser(User user)
         {
-            var dbUser = await _userContext.Users.FirstOrDefaultAsync(u => u.Id == userDTO.Id);
+            var dbUser = await _userContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
 
             if (dbUser is null)
                 return false;
 
-            dbUser.Username = userDTO.Username;
-            dbUser.Name = userDTO.Name;
-            dbUser.Email = userDTO.Email;
+            dbUser.Username = user.Username;
+            dbUser.Name = user.Name;
+            dbUser.Email = user.Email;
 
             await _userContext.SaveChangesAsync();
 

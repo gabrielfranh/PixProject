@@ -11,6 +11,7 @@
 *.sln.docstates
 
 **/[Aa]pp[Ss]ettings.json
+**/[Aa]pp[Ss]ettings.*.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

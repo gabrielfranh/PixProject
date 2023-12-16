@@ -1,6 +1,10 @@
-﻿using System.Security.Cryptography;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Connections;
+using RabbitMQ.Client;
+using System.Security.Cryptography;
 using System.Text;
 using UserAPI.DTOs;
+using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
 
@@ -9,16 +13,21 @@ namespace UserAPI.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<UserDTO> GetUserById(int id)
         {
             var user = await _userRepository.GetUserById(id);
-            return user;
+
+            var userDTO = _mapper.Map<UserDTO>(user);
+
+            return userDTO;
         }
 
         public async Task CreateUser(UserDTO userDTO)
@@ -29,12 +38,17 @@ namespace UserAPI.Services
             var passHash = GeneratePasswordHash(userDTO.Password, salt);
             userDTO.Hash = passHash;
 
-            await _userRepository.CreateUser(userDTO);
+            var user = _mapper.Map<User>(userDTO);
+
+            await _userRepository.CreateUser(user);
+
+            PublishUserCreateMessage(userDTO);
         }
 
         public async Task<bool> UpdateUser(UserDTO userDTO)
         {
-            return await _userRepository.UpdateUser(userDTO);
+            var user = _mapper.Map<User>(userDTO);
+            return await _userRepository.UpdateUser(user);
         }
 
         public async Task<bool> DeleteUserById(int id)
@@ -63,6 +77,27 @@ namespace UserAPI.Services
 
             var digestBytes = SHA512.Create().ComputeHash(passwordWithSaltBytes.ToArray());
             return Convert.ToBase64String(digestBytes);
+        }
+
+        private static void PublishUserCreateMessage(UserDTO userDTO)
+        {
+            var factory = new ConnectionFactory { HostName = "localhost" };
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            channel.QueueDeclare(queue: "my-queue",
+                                 durable: true,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+
+            string message = userDTO.ToString();
+            var body = Encoding.UTF8.GetBytes(message);
+
+            channel.BasicPublish(exchange: "my-exchange",
+                                 routingKey: "user_create",
+                                 basicProperties: null,
+                                 body: body);
         }
     }
 }

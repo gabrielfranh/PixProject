@@ -9,6 +9,9 @@ using UserAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+Console.WriteLine($"Environment: {environment}");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
